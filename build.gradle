@@ -4,6 +4,9 @@ plugins {
     id "com.palantir.git-version" version "0.14.0"
 }
 
+def name = 'GradleJavaKotlinJar'  // <- Will change the .jar name
+def main = 'org.pignat.demo.Main' // <- Main class name
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(11)
@@ -27,11 +30,9 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
-    testImplementation 'org.assertj:assertj-core:3.9.2'
-    testImplementation 'org.assertj:assertj-swing-junit:3.9.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
     implementation 'org.apache.logging.log4j:log4j-api:2.18.0'
     implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
@@ -57,9 +58,9 @@ tasks.named('jar') {
     dependsOn test
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes('Implementation-Title': rootProject.name,
+        attributes('Implementation-Title': name,
                 'Implementation-Version': rootProject.version,
-                'Main-Class': 'org.pignat.demo.Main',
+                'Main-Class': main,
                 'Multi-Release': 'true'
         )
     }

@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 public class Version {
     private static final Logger log = LogManager.getLogger();
     private static String version = "ERROR:NO_VERSION";
+    private static boolean release = true;
 
     static {
         init();
@@ -21,8 +22,12 @@ public class Version {
      *
      * @return A String containing the version
      */
-    static public String string() {
+    public static String string() {
         return version;
+    }
+
+    public static boolean isRelease() {
+        return release;
     }
 
     /**
@@ -43,6 +48,8 @@ public class Version {
             }
             if (v.contains("dirty") || v.contains("-")) {
                 log.warn(String.format("WARNING: using non-release version '%s'", v));
+            } else {
+                release = true;
             }
             version = v;
         } catch (IOException e) {

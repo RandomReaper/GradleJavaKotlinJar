@@ -20,6 +20,13 @@ results :
 | `build/GradleJavaKotlinJar-dev.jar`          | The latest build of the jar, constant name, useful for testing.   |
 | `build/libs/GradleJavaKotlinJar-VERSION.jar` | The same file with a [versioned](#Version) name.                  |
 
+:bulb: The jar name and main class can be changed in `build.gradle`
+
+```groovy
+def name = 'GradleJavaKotlinJar'  // <- Will change the .jar name
+def main = 'org.pignat.demo.Main' // <- Main class name
+```
+
 ## Running
 
 * ```gradle run```
