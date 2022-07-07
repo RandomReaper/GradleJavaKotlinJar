@@ -1,0 +1,102 @@
+plugins {
+    id 'java-library'
+    id "org.jetbrains.kotlin.jvm" version "1.6.20"
+    id "com.palantir.git-version" version "0.14.0"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+kotlin {
+    jvmToolchain {
+        languageVersion = JavaLanguageVersion.of(11)
+    }
+}
+
+test {
+    useJUnitPlatform()
+    //jvmArgs["-Djava.awt.headless=true"]
+    //environment.remove("DISPLAY")
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    testImplementation 'org.assertj:assertj-core:3.9.2'
+    testImplementation 'org.assertj:assertj-swing-junit:3.9.2'
+
+    implementation 'org.apache.logging.log4j:log4j-api:2.18.0'
+    implementation 'org.apache.logging.log4j:log4j-core:2.18.0'
+    implementation 'org.apache.logging.log4j:log4j:2.18.0'
+    implementation 'org.slf4j:slf4j-api:1.7.36'
+    implementation 'org.slf4j:slf4j-simple:1.7.36'
+}
+
+def genDir = "$buildDir/gen/"
+
+task versionGen {
+    def versionFile = "$genDir/version.txt"
+    outputs.upToDateWhen { false }
+    outputs.file(versionFile)
+    doLast {
+        new File(versionFile).text = """${gitVersion()}
+"""
+    }
+}
+
+tasks.named('jar') {
+    dependsOn versionGen
+    dependsOn test
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes('Implementation-Title': rootProject.name,
+                'Implementation-Version': rootProject.version,
+                'Main-Class': 'org.pignat.demo.Main',
+                'Multi-Release': 'true'
+        )
+    }
+    archiveBaseName.set(rootProject.name)
+    archiveVersion.set(rootProject.version)
+
+    // Add sources to the jar
+    from('src/main/java') {
+        include '**/*.java'
+    }
+    from('src/main/kotlin') {
+        include '**/*.kt'
+    }
+
+    from("$genDir") {
+        rename {
+            String filename -> "res/generated/" + filename
+        }
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+version = gitVersion()
+
+task runJar(type: JavaExec) {
+    dependsOn jar
+    mainClass = "-jar";
+    args jar.archiveFile.get()
+}
+
+task copyJar(type: Copy) {
+    from jar // copies output of file produced from jar task
+    into "$buildDir"
+    rename '.*', "$rootProject.name-dev.jar"
+}
+
+jar.finalizedBy copyJar
+
