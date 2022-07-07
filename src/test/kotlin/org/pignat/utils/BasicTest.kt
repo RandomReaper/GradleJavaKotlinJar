@@ -1,8 +1,6 @@
-package org.pignat.photobot
+package org.pignat.utils
 
 import org.junit.jupiter.api.Test
-import org.pignat.utils.Version
-import org.pignat.utils.VersionKt
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 
