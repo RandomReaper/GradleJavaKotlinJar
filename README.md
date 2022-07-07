@@ -6,6 +6,7 @@ Here is a sample gradle project mixing java+kotlin exporting a runnable jar.
 
 * The git version is available from the code
 * Log4j
+* resources access
 
 ## Compiling
 
